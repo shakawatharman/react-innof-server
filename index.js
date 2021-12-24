@@ -49,6 +49,22 @@ async function run() {
 
 		/**
 		 * GET API
+		 * CHECK USER ROLE API
+		 */
+
+		app.get("/users/:email", async (req, res)=>{
+			const email = req.params.email;
+			const query = { email : email };
+			const user = await CollectionUsers.findOne(query);
+			let isAdmin = false;
+			if(user?.role === 'admin'){
+				isAdmin = true;
+			}
+			res.json({ admin: isAdmin})
+		})
+
+		/**
+		 * GET API
 		 * Get Service Data
 		 */
 		
@@ -186,13 +202,53 @@ async function run() {
 		 * INSERT USER DATA ON FIRST TIME LOGIN
 		 */
 
-		app.put("/users", async (req, res) => {
+		 app.put("/users", async (req, res) => {
 			const user = req.body;
 			const filter = { email : user.email };
 			const options = { upsert : true };
 			const updateDoc = {	$set : user }
 			const result = await CollectionUsers.updateOne(filter,updateDoc, options);
 			res.json(result)
+		})
+
+		/**
+		 * PUT API
+		 * MAKE USER ADMIN API
+		 */
+
+		app.put("/users/admin", async (req, res) => {
+			const user = req.body;
+			const filter = { email : user.email };
+			const updateDoc = {	$set : { role : "admin"} }
+			const result = await CollectionUsers.updateOne(filter,updateDoc);
+			res.json(result)
+		})
+
+		/**
+		 * ***********************
+		 * ALL DELETE API
+		 * ********************
+		 */
+
+		/**
+		 * DELETE API
+		 * Delete Service Data
+		 */
+		 app.delete("/services/:id", async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: ObjectId(id) };
+			const result = await CollectionServices.deleteOne(query);
+			res.json(result);
+		})
+		/**
+		 * DELETE API
+		 * Delete an Order
+		 */
+		 app.delete("/manageorders/delete/:id", async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: ObjectId(id) };
+			const result = await CollectionOrders.deleteOne(query);
+			res.json(result);
 		})
 
 
