@@ -216,11 +216,39 @@ async function run() {
 		 * MAKE USER ADMIN API
 		 */
 
-		app.put("/users/admin", async (req, res) => {
+		 app.put("/users/admin", async (req, res) => {
 			const user = req.body;
 			const filter = { email : user.email };
 			const updateDoc = {	$set : { role : "admin"} }
 			const result = await CollectionUsers.updateOne(filter,updateDoc);
+			res.json(result)
+		})
+
+		/**
+		 * PUT API
+		 * CHANGE USER ROLE
+		 */
+
+		 app.put("/users/role/:id", async (req, res) => {
+			const id = req.params.id;
+			const role = req.body.role;
+			const filter = { _id: ObjectId(id) };
+			const updateDoc = {	$set : { role : role } }
+			const result = await CollectionUsers.updateOne(filter,updateDoc);
+			res.json(result)
+		})
+
+		/**
+		 * PUT API
+		 * CHANGE ORDER STATUS
+		 */
+
+		app.put("/manageorders/status/:id", async (req, res) => {
+			const id = req.params.id;
+			const status = req.body.status;
+			const filter = { _id: ObjectId(id) };
+			const updateDoc = {	$set : { status : status } }
+			const result = await CollectionOrders.updateOne(filter,updateDoc);
 			res.json(result)
 		})
 
